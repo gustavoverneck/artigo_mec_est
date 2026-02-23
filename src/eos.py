@@ -118,3 +118,40 @@ def solve_white_dwarf(ne_array, A_Z=2.0):
         pressure_list.append(P)
         
     return np.array(epsilon_list), np.array(pressure_list)
+
+def validate_eos(eps_array, P_array):
+    """Filtra a EoS removendo pontos que violam a física."""
+    # Derivada dP/deps (Velocidade do som ao quadrado)
+    vs_squared = np.gradient(P_array, eps_array)
+    
+    # Criamos uma máscara booleana: Maior que 0 (Estável) e Menor/Igual a 1 (Causal)
+    valid_mask = (vs_squared > 0.0) & (vs_squared <= 1.0)
+    
+    # Adicional: Pressão e energia devem ser positivas
+    valid_mask &= (P_array >= 0) & (eps_array >= 0)
+    
+    # Retorna apenas os dados que passaram no teste
+    return eps_array[valid_mask], P_array[valid_mask]
+
+def validate_mr_curve(masses, radii):
+    """
+    Corta a curva Massa-Raio descartando o ramo instável (após a massa máxima)
+    e pontos onde o integrador falhou (M < 0 ou R < 0).
+    """
+    # 1. Filtra lixo numérico básico
+    valid_basic = (masses > 0) & (radii > 0)
+    M_clean = masses[valid_basic]
+    R_clean = radii[valid_basic]
+    
+    if len(M_clean) == 0:
+        return np.array([]), np.array([])
+        
+    # 2. Encontra o índice da massa máxima
+    max_idx = np.argmax(M_clean)
+    
+    # 3. Retorna apenas a curva do início até a massa máxima
+    # (Descarta tudo o que vem depois do max_idx)
+    M_stable = M_clean[:max_idx + 1]
+    R_stable = R_clean[:max_idx + 1]
+    
+    return M_stable, R_stable

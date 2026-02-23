@@ -6,23 +6,40 @@ import matplotlib.pyplot as plt
 if __name__ == "__main__":
     # Vetor de densidades bariônicas de 0.05 a 1.0 fm^-3 (A densidade de saturação nuclear é ~0.16 fm^-3)
     n_b_array = np.linspace(0.01, 15, 150)
-    
+
+    # 1. Calcula a EoS
     print("Calculando a Equação de Estado (EoS)...")
     eps_pure, P_pure = solve_pure_neutrons(n_b_array)
     eps_npe, P_npe, y_p = solve_npe_gas(n_b_array)
     
-    print("Integrando as equações TOV para o Gás de Nêutrons Puro...")
-    M_pure, R_pure = generate_mr_curve(eps_pure, P_pure)
-    
-    print("Integrando as equações TOV para o Gás n,p,e em Equilíbrio Beta...")
-    M_npe, R_npe = generate_mr_curve(eps_npe, P_npe)
+    # 2. Aplica os Filtros da Física (Causalidade e Estabilidade)
+    eps_pure, P_pure = validate_eos(eps_pure, P_pure)
+    eps_npe, P_npe = validate_eos(eps_npe, P_npe)
 
-    # Densidades de elétrons em fm^-3 (escala de 10^-10 a 10^-5 fm^-3)
-    ne_array = np.logspace(-5, 3, 1000)
+    
+    # 3. Integra a TOV
+    print("Integrando as equações TOV para o Gás n,p,e em Equilíbrio Beta...")
+    M_pure, R_pure = generate_mr_curve(eps_pure, P_pure)
+    M_npe, R_npe = generate_mr_curve(eps_npe, P_npe)
+    
+    # 4. Aplica o Filtro de Estabilidade Gravitacional
+    # M_pure, R_pure = validate_mr_curve(M_pure, R_pure)
+    # M_npe, R_npe = validate_mr_curve(eps_npe, P_npe)
+
+
+    # Densidades de elétrons em fm^-3
+    ne_array = np.logspace(-12, -6, 150)
     print("Calculando EoS da Anã Branca...")
     eps_wd, P_wd = solve_white_dwarf(ne_array, A_Z=2.0)
+
+    # 1. Verificação Física da EoS
+    eps_wd, P_wd = validate_eos(eps_wd, P_wd)
+
     print("Integrando a estrela (Isso pode levar alguns segundos)...")
-    M_wd, R_wd = generate_mr_curve(eps_wd, P_wd, r_span=[1e-5, 20000.0], max_step=50)
+    M_wd, R_wd = generate_mr_curve(eps_wd, P_wd, r_span=[1e-5, 20000.0], max_step=30)
+
+    # 2. Verificação Física da Curva Massa-Raio
+    # M_wd, R_wd = validate_mr_curve(M_wd, R_wd)
 
     
 # ==========================================
