@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
 
     # Densidades de elétrons em fm^-3
-    ne_array = np.logspace(-12, -6, 150)
+    ne_array = np.logspace(-12, -4, 150)
     print("Calculando EoS da Anã Branca...")
     eps_wd, P_wd = solve_white_dwarf(ne_array, A_Z=2.0)
 
@@ -98,9 +98,9 @@ if __name__ == "__main__":
     ax3.scatter(R_max, M_max, color='black', s=20, zorder=5)
     # Anotação com setinha ou texto próximo
     ax3.annotate(f'$M_{{\\rm max}} = {M_max:.2f} M_\\odot$\n$R = {R_max:.1f}$ km',
-                 xy=(R_max, M_max), xytext=(R_max + 2, M_max),
+                 xy=(R_max, M_max), xytext=(R_max + 1.1, M_max),
                  arrowprops=dict(facecolor='black', arrowstyle='->', alpha=0.5),
-                 fontsize=8)
+                 fontsize=10)
 
     ax3.set_xlabel(r'Raio $R$ (km)')
     ax3.set_ylabel(r'Massa $M$ ($M_\odot$)')
@@ -109,7 +109,7 @@ if __name__ == "__main__":
     ax3.grid(True)
 
     plt.savefig('result_plot.pdf', dpi=300, bbox_inches='tight')
-    plt.show()
+    # plt.show()
 
 
 # -------------------------
@@ -134,14 +134,15 @@ if __name__ == "__main__":
 
     # Destacando a massa máxima
     ax2.scatter(R_wd[max_idx], M_wd[max_idx], color='black', zorder=5)
-    # ax2.axhline(y=1.44, color='gray', linestyle='--', label='Limite de Chandrasekhar (1.44 $M_\odot$)')
+    ax2.axhline(y=1.44, color='gray', linestyle='--', label='Limite de Chandrasekhar (1.44 $M_\odot$)')
     
-    plt.text(R_wd[max_idx] + 500, M_wd[max_idx] - 0.1, 
-             f'M_max = {M_wd[max_idx]:.2f} $M_\odot$\n$R \\approx$ {R_wd[max_idx]:.0f} km', 
+    ax2.text(0.95, 0.95, 
+             f'$M_{{\\rm max}}$ = {M_wd[max_idx]:.2f} $M_\odot$\n$R \\approx$ {R_wd[max_idx]:.0f} km', 
+             transform=ax2.transAxes,
+             ha='right', va='top', multialignment='left',
              fontsize=10)
 
 
     plt.savefig('result__wd_plot.pdf', dpi=300, bbox_inches='tight')
-    plt.show()
+    # plt.show()
 
-    
