@@ -1,0 +1,1 @@
+Resultados do artigo desenvolvido para a disciplina de Mecânica Estatística do doutorado em física do ppgfis ufes. O artigo retrata a descrição de anãs brancas e estrelas de nêutrons atômicas a partir da distribuição de Fermi-Dirac.
